@@ -47,11 +47,17 @@ class MainActivity : ComponentActivity() {
     }
 
     private val budgetRepository: BudgetRepository by lazy {
-        BudgetRepository(database.budgetDao())
+        BudgetRepository(
+            database.budgetDao(),
+            database.transactionDao()
+        )
     }
 
     private val reminderRepository: ReminderRepository by lazy {
-        ReminderRepository(database.reminderDao())
+        ReminderRepository(
+            database.reminderDao(),
+            applicationContext
+        )
     }
 
     private val analyticsRepository: AnalyticsRepository by lazy {
@@ -83,7 +89,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private val reminderViewModel: ReminderViewModel by viewModels {
-        ReminderViewModelFactory(reminderRepository, applicationContext)
+        ReminderViewModelFactory(reminderRepository)
     }
 
     private val exportViewModel: ExportViewModel by viewModels {

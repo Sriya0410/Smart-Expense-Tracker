@@ -49,6 +49,7 @@ fun BudgetScreen(
 ) {
     val budgets by budgetViewModel.budgets.collectAsState()
     val message by budgetViewModel.message.collectAsState()
+    val spentAmounts by budgetViewModel.spentAmounts.collectAsState()
 
     val category = remember { mutableStateOf("") }
     val amount = remember { mutableStateOf("") }
@@ -194,7 +195,7 @@ fun BudgetScreen(
             items(budgets) { budget ->
                 BudgetCard(
                     budget = budget,
-                    spentAmount = 0.0
+                    spentAmount = spentAmounts[budget.category] ?: 0.0
                 )
             }
         }

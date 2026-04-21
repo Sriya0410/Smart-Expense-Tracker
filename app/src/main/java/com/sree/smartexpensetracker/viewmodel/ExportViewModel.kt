@@ -25,6 +25,13 @@ class ExportViewModel(
             _isExporting.value = true
             try {
                 _exportResult.value = repository.exportTransactionsToCsv()
+            } catch (e: Exception) {
+                _exportResult.value = ExportResult(
+                    success = false,
+                    message = e.message ?: "CSV export failed",
+                    filePath = null,
+                    exportType = "CSV"
+                )
             } finally {
                 _isExporting.value = false
             }
@@ -36,6 +43,13 @@ class ExportViewModel(
             _isExporting.value = true
             try {
                 _exportResult.value = repository.exportTransactionsToPdf()
+            } catch (e: Exception) {
+                _exportResult.value = ExportResult(
+                    success = false,
+                    message = e.message ?: "PDF export failed",
+                    filePath = null,
+                    exportType = "PDF"
+                )
             } finally {
                 _isExporting.value = false
             }

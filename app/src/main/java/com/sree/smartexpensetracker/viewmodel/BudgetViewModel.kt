@@ -31,6 +31,35 @@ class BudgetViewModel(
     private val _message = MutableStateFlow<String?>(null)
     val message: StateFlow<String?> = _message.asStateFlow()
 
+    private val _spentAmounts = MutableStateFlow<Map<String, Double>>(emptyMap())
+    val spentAmounts: StateFlow<Map<String, Double>> = _spentAmounts.asStateFlow()
+
+    init {
+        observeBudgetSpending()
+    }
+
+    private fun observeBudgetSpending() {
+        viewModelScope.launch {
+            budgets.collect { budgetList ->
+                val start = DateUtils.getStartOfCurrentMonth()
+                val end = DateUtils.getEndOfCurrentMonth()
+
+                val map = mutableMapOf<String, Double>()
+
+                budgetList.forEach { budget ->
+                    val spent = repository.getSpentAmountForCategory(
+                        category = budget.category,
+                        startDate = start,
+                        endDate = end
+                    )
+                    map[budget.category] = spent
+                }
+
+                _spentAmounts.value = map
+            }
+        }
+    }
+
     fun addBudget(category: String, limitAmount: Double) {
         if (category.isBlank()) {
             _message.value = "Category cannot be empty."

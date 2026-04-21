@@ -12,7 +12,7 @@ import androidx.room.TypeConverters
         BudgetEntity::class,
         ReminderEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(TransactionTypeConverter::class)

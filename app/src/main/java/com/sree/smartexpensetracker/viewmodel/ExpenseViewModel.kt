@@ -19,6 +19,21 @@ class ExpenseViewModel(
     private val repository: TransactionRepository
 ) : ViewModel() {
 
+    companion object {
+        val defaultCategories = listOf(
+            "Food",
+            "Travel",
+            "Shopping",
+            "Bills",
+            "Salary",
+            "Entertainment",
+            "Health",
+            "Education",
+            "Investment",
+            "Other"
+        )
+    }
+
     private val _filterState = MutableStateFlow(FilterState())
     val filterState: StateFlow<FilterState> = _filterState.asStateFlow()
 
@@ -26,6 +41,21 @@ class ExpenseViewModel(
     val message: StateFlow<String?> = _message.asStateFlow()
 
     private val allTransactions = repository.observeAllTransactions()
+
+    val categories: StateFlow<List<String>> =
+        repository.observeAllCategories()
+            .combine(MutableStateFlow(defaultCategories)) { dbCategories, defaults ->
+                (defaults + dbCategories)
+                    .map { it.trim() }
+                    .filter { it.isNotBlank() }
+                    .distinctBy { it.lowercase() }
+                    .sortedBy { it.lowercase() }
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = defaultCategories
+            )
 
     val transactions: StateFlow<List<TransactionEntity>> =
         combine(allTransactions, _filterState) { list, filter ->

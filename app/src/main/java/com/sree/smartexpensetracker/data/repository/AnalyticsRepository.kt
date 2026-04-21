@@ -7,6 +7,7 @@ import com.sree.smartexpensetracker.data.model.CategoryExpense
 import com.sree.smartexpensetracker.data.model.SummaryData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 
 class AnalyticsRepository(
     private val transactionDao: TransactionDao
@@ -17,14 +18,16 @@ class AnalyticsRepository(
             transactionDao.observeTotalIncome(),
             transactionDao.observeTotalExpense()
         ) { income, expense ->
-            val totalIncome = income
-            val totalExpense = expense
             SummaryData(
-                totalIncome = totalIncome,
-                totalExpense = totalExpense,
-                balance = totalIncome - totalExpense
+                totalIncome = income,
+                totalExpense = expense,
+                balance = income - expense
             )
         }
+    }
+
+    fun observeTransactionRefreshKey(): Flow<Int> {
+        return transactionDao.observeAllTransactions().map { it.size }
     }
 
     suspend fun getCategoryExpenses(): List<CategoryExpense> {

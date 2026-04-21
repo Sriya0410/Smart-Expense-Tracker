@@ -2,10 +2,12 @@ package com.sree.smartexpensetracker.data.repository
 
 import com.sree.smartexpensetracker.data.local.BudgetDao
 import com.sree.smartexpensetracker.data.local.BudgetEntity
+import com.sree.smartexpensetracker.data.local.TransactionDao
 import kotlinx.coroutines.flow.Flow
 
 class BudgetRepository(
-    private val budgetDao: BudgetDao
+    private val budgetDao: BudgetDao,
+    private val transactionDao: TransactionDao
 ) {
 
     fun observeAllBudgets(): Flow<List<BudgetEntity>> {
@@ -16,20 +18,8 @@ class BudgetRepository(
         return budgetDao.observeBudgetsForMonth(month, year)
     }
 
-    suspend fun getBudgetById(id: Int): BudgetEntity? {
-        return budgetDao.getBudgetById(id)
-    }
-
-    suspend fun getBudgetByCategoryAndMonth(
-        category: String,
-        month: Int,
-        year: Int
-    ): BudgetEntity? {
-        return budgetDao.getBudgetByCategoryAndMonth(category, month, year)
-    }
-
-    suspend fun insertBudget(budget: BudgetEntity): Long {
-        return budgetDao.insertBudget(budget)
+    suspend fun insertBudget(budget: BudgetEntity) {
+        budgetDao.insertBudget(budget)
     }
 
     suspend fun updateBudget(budget: BudgetEntity) {
@@ -46,9 +36,16 @@ class BudgetRepository(
         month: Int,
         year: Int
     ) {
-        val existing = budgetDao.getBudgetByCategoryAndMonth(category, month, year)
+        val existingBudgets = budgetDao.getBudgetsForMonthOnce(month, year)
+        val existing = existingBudgets.firstOrNull {
+            it.category.equals(category, ignoreCase = true)
+        }
 
-        if (existing == null) {
+        if (existing != null) {
+            budgetDao.updateBudget(
+                existing.copy(limitAmount = limitAmount)
+            )
+        } else {
             budgetDao.insertBudget(
                 BudgetEntity(
                     category = category,
@@ -57,10 +54,14 @@ class BudgetRepository(
                     year = year
                 )
             )
-        } else {
-            budgetDao.updateBudget(
-                existing.copy(limitAmount = limitAmount)
-            )
         }
+    }
+
+    suspend fun getSpentAmountForCategory(
+        category: String,
+        startDate: Long,
+        endDate: Long
+    ): Double {
+        return transactionDao.getExpenseTotalForCategory(category, startDate, endDate)
     }
 }

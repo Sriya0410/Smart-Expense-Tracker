@@ -4,11 +4,17 @@ import com.sree.smartexpensetracker.data.local.TransactionDao
 import com.sree.smartexpensetracker.data.local.TransactionType
 import com.sree.smartexpensetracker.data.model.InsightItem
 import com.sree.smartexpensetracker.data.model.InsightSeverity
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlin.math.abs
 
 class InsightRepository(
     private val transactionDao: TransactionDao
 ) {
+
+    fun observeTransactionRefreshKey(): Flow<Int> {
+        return transactionDao.observeAllTransactions().map { it.size }
+    }
 
     suspend fun generateInsights(): List<InsightItem> {
         val allTransactions = transactionDao.getAllTransactions()

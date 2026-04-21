@@ -33,13 +33,21 @@ class AnalyticsViewModel(
 
     init {
         observeSummary()
-        refreshAnalytics()
+        observeTransactions()
     }
 
     private fun observeSummary() {
         viewModelScope.launch {
             repository.observeSummary().collect { summaryData ->
                 _summary.value = summaryData
+            }
+        }
+    }
+
+    private fun observeTransactions() {
+        viewModelScope.launch {
+            repository.observeTransactionRefreshKey().collect {
+                refreshAnalytics()
             }
         }
     }

@@ -26,6 +26,7 @@ import com.sree.smartexpensetracker.ui.theme.PrimaryBlue
 import com.sree.smartexpensetracker.ui.theme.TextPrimary
 import com.sree.smartexpensetracker.ui.theme.TextSecondary
 import com.sree.smartexpensetracker.utils.CurrencyUtils
+import kotlin.math.abs
 
 @Composable
 fun BudgetCard(
@@ -45,7 +46,7 @@ fun BudgetCard(
 
     val progressColor = when {
         rawProgress < 0.6f -> IncomeGreen
-        rawProgress < 0.9f -> PrimaryBlue
+        rawProgress < 1f -> PrimaryBlue
         else -> ExpenseRed
     }
 
@@ -113,7 +114,7 @@ fun BudgetCard(
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(
                     text = if (isOverBudget) {
-                        "Over by ${CurrencyUtils.format(kotlin.math.abs(remaining))}"
+                        "Budget exceeded by ${CurrencyUtils.format(abs(remaining))}"
                     } else {
                         "Remaining ${CurrencyUtils.format(remaining)}"
                     },
@@ -127,6 +128,12 @@ fun BudgetCard(
                     modifier = Modifier.fillMaxWidth(),
                     color = progressColor,
                     trackColor = GlassWhite.copy(alpha = 0.12f)
+                )
+
+                Text(
+                    text = "${"%.0f".format(rawProgress * 100)}% used",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = if (isOverBudget) ExpenseRed else TextSecondary
                 )
             }
         }

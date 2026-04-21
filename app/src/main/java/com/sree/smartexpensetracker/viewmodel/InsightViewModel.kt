@@ -21,7 +21,15 @@ class InsightViewModel(
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     init {
-        loadInsights()
+        observeTransactions()
+    }
+
+    private fun observeTransactions() {
+        viewModelScope.launch {
+            repository.observeTransactionRefreshKey().collect {
+                loadInsights()
+            }
+        }
     }
 
     fun loadInsights() {
