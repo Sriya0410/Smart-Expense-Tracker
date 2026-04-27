@@ -58,7 +58,6 @@ fun AppDrawerContent(
         DrawerDestination(Screen.Budget.route, "Budget Management", Icons.Default.Wallet),
         DrawerDestination(Screen.Analytics.route, "Analytics", Icons.Default.BarChart),
         DrawerDestination(Screen.Insights.route, "Smart Insights", Icons.Default.Lightbulb),
-        DrawerDestination(Screen.Reminder.route, "Reminders", Icons.Default.Notifications),
         DrawerDestination(Screen.Export.route, "Export Report", Icons.Default.FileDownload)
     )
 

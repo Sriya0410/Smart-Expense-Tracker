@@ -9,10 +9,9 @@ import androidx.room.TypeConverters
 @Database(
     entities = [
         TransactionEntity::class,
-        BudgetEntity::class,
-        ReminderEntity::class
+        BudgetEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(TransactionTypeConverter::class)
@@ -20,7 +19,6 @@ abstract class ExpenseDatabase : RoomDatabase() {
 
     abstract fun transactionDao(): TransactionDao
     abstract fun budgetDao(): BudgetDao
-    abstract fun reminderDao(): ReminderDao
 
     companion object {
         @Volatile
